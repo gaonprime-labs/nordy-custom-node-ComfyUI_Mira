@@ -50,8 +50,15 @@ def mask_blur(blur, mask):
         
     return new_mask
 
-def create_mask_with_canvas(C_Width, C_Height, X, Y, Width, Height, Intenisity, Blur):       
-    destinationMask = torch.full((1,C_Height, C_Width), 0, dtype=torch.float32, device="cpu")
+def create_mask_with_canvas(C_Width, C_Height, X, Y, Width, Height, Intenisity, Blur):       #fix int realted problem 250404-wk
+    C_Width = int(C_Width)
+    C_Height = int(C_Height)
+    X = int(X)
+    Y = int(Y)
+    Width = int(Width)
+    Height = int(Height)
+
+    destinationMask = torch.full((1, C_Height, C_Width), 0, dtype=torch.float32, device="cpu")
     
     output = destinationMask.reshape((-1, destinationMask.shape[-2], destinationMask.shape[-1])).clone()
     
@@ -60,7 +67,10 @@ def create_mask_with_canvas(C_Width, C_Height, X, Y, Width, Height, Intenisity, 
     
     left, top = (X, Y)
     right, bottom = (min(left + source.shape[-1], destinationMask.shape[-1]), min(top + source.shape[-2], destinationMask.shape[-2]))
-    visible_width, visible_height = (right - left, bottom - top,)
+    visible_width, visible_height = (right - left, bottom - top)
+    
+    visible_width = int(visible_width)
+    visible_height = int(visible_height)
     
     source_portion = source[:, :visible_height, :visible_width]
     destination_portion = destinationMask[:, top:bottom, left:right]
